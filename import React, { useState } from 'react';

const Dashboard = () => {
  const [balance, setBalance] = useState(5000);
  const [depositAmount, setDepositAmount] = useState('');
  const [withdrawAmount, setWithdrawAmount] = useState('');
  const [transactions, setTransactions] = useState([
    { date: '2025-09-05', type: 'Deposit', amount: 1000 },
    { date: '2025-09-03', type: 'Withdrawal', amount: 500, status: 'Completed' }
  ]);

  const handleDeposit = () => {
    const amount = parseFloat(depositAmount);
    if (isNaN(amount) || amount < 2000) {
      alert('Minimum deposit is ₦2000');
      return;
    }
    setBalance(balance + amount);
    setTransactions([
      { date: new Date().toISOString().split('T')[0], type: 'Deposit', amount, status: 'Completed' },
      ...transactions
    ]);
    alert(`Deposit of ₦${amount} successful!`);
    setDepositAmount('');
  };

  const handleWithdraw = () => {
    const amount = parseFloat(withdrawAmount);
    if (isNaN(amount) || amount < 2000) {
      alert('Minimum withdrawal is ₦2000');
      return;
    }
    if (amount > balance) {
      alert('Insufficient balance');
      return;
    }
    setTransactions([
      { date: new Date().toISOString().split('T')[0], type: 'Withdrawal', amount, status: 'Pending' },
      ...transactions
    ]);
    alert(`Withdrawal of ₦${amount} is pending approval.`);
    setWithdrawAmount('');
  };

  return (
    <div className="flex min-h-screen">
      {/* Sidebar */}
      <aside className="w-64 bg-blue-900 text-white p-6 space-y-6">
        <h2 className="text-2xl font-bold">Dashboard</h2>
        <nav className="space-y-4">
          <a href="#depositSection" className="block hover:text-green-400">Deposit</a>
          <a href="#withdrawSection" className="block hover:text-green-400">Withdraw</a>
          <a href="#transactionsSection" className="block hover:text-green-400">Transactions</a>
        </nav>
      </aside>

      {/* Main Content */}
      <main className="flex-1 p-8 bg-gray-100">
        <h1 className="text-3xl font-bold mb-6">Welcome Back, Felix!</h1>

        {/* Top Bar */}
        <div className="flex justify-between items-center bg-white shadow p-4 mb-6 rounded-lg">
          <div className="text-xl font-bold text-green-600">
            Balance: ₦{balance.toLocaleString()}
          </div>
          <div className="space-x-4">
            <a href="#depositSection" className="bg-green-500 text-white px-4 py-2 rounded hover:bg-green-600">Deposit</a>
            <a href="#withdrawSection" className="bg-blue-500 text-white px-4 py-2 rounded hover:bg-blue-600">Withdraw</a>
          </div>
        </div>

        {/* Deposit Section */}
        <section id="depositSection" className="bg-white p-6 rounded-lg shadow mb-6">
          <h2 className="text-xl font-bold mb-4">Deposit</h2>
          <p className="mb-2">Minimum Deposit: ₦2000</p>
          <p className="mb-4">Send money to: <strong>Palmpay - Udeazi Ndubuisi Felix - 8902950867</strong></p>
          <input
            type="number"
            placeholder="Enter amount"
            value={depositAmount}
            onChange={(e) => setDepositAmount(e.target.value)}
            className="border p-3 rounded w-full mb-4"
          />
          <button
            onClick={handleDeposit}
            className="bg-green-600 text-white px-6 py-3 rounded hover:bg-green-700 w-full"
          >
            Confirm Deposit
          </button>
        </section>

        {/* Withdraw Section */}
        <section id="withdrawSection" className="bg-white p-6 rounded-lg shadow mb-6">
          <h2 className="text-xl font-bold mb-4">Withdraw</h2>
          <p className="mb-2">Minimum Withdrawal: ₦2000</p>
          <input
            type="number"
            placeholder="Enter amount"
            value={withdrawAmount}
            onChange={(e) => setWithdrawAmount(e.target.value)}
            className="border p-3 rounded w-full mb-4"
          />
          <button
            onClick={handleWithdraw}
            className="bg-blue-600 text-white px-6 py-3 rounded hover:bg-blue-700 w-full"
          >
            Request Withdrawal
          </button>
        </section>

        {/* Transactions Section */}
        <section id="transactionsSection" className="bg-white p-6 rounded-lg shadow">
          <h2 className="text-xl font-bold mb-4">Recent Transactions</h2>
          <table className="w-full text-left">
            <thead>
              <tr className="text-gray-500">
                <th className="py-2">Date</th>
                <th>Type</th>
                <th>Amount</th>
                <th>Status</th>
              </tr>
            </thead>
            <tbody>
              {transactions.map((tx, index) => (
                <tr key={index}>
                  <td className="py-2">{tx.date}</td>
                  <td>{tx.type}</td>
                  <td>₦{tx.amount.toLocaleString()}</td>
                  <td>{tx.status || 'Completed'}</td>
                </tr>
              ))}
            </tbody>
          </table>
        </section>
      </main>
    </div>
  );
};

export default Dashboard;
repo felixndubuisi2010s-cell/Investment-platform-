@@ -1,0 +1,140 @@
+import React, { useState } from 'react';
+
+const Dashboard = () => {
+  const [balance, setBalance] = useState(5000);
+  const [depositAmount, setDepositAmount] = useState('');
+  const [withdrawAmount, setWithdrawAmount] = useState('');
+  const [transactions, setTransactions] = useState([
+    { date: '2025-09-05', type: 'Deposit', amount: 1000 },
+    { date: '2025-09-03', type: 'Withdrawal', amount: 500, status: 'Completed' }
+  ]);
+
+  const handleDeposit = () => {
+    const amount = parseFloat(depositAmount);
+    if (isNaN(amount) || amount < 2000) {
+      alert('Minimum deposit is ₦2000');
+      return;
+    }
+    setBalance(balance + amount);
+    setTransactions([
+      { date: new Date().toISOString().split('T')[0], type: 'Deposit', amount, status: 'Completed' },
+      ...transactions
+    ]);
+    alert(`Deposit of ₦${amount} successful!`);
+    setDepositAmount('');
+  };
+
+  const handleWithdraw = () => {
+    const amount = parseFloat(withdrawAmount);
+    if (isNaN(amount) || amount < 2000) {
+      alert('Minimum withdrawal is ₦2000');
+      return;
+    }
+    if (amount > balance) {
+      alert('Insufficient balance');
+      return;
+    }
+    setTransactions([
+      { date: new Date().toISOString().split('T')[0], type: 'Withdrawal', amount, status: 'Pending' },
+      ...transactions
+    ]);
+    alert(`Withdrawal of ₦${amount} is pending approval.`);
+    setWithdrawAmount('');
+  };
+
+  return (
+    <div className="flex min-h-screen">
+      {/* Sidebar */}
+      <aside className="w-64 bg-blue-900 text-white p-6 space-y-6">
+        <h2 className="text-2xl font-bold">Dashboard</h2>
+        <nav className="space-y-4">
+          <a href="#depositSection" className="block hover:text-green-400">Deposit</a>
+          <a href="#withdrawSection" className="block hover:text-green-400">Withdraw</a>
+          <a href="#transactionsSection" className="block hover:text-green-400">Transactions</a>
+        </nav>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 p-8 bg-gray-100">
+        <h1 className="text-3xl font-bold mb-6">Welcome Back, Felix!</h1>
+
+        {/* Top Bar */}
+        <div className="flex justify-between items-center bg-white shadow p-4 mb-6 rounded-lg">
+          <div className="text-xl font-bold text-green-600">
+            Balance: ₦{balance.toLocaleString()}
+          </div>
+          <div className="space-x-4">
+            <a href="#depositSection" className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Deposit</a>
+            <a href="#withdrawSection" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Withdraw</a>
+          </div>
+        </div>
+
+        {/* Deposit Section */}
+        <section id="depositSection" className="bg-white p-6 rounded-lg shadow mb-6">
+          <h2 className="text-xl font-bold mb-4">Deposit</h2>
+          <p className="mb-2">Minimum Deposit: ₦2000</p>
+          <p className="mb-4">Send money to: <strong>Palmpay - Udeazi Ndubuisi Felix - 8902950867</strong></p>
+          <input
+            type="number"
+            placeholder="Enter amount"
+            value={depositAmount}
+            onChange={(e) => setDepositAmount(e.target.value)}
+            className="border p-3 rounded w-full mb-4"
+          />
+          <button
+            onClick={handleDeposit}
+            className="bg-green-600 text-white px-6 py-3 rounded hover:bg-green-700 w-full"
+          >
+            Confirm Deposit
+          </button>
+        </section>
+
+        {/* Withdraw Section */}
+        <section id="withdrawSection" className="bg-white p-6 rounded-lg shadow mb-6">
+          <h2 className="text-xl font-bold mb-4">Withdraw</h2>
+          <p className="mb-2">Minimum Withdrawal: ₦2000</p>
+          <input
+            type="number"
+            placeholder="Enter amount"
+            value={withdrawAmount}
+            onChange={(e) => setWithdrawAmount(e.target.value)}
+            className="border p-3 rounded w-full mb-4"
+          />
+          <button
+            onClick={handleWithdraw}
+            className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700 w-full"
+          >
+            Request Withdrawal
+          </button>
+        </section>
+
+        {/* Transactions Section */}
+        <section id="transactionsSection" className="bg-white p-6 rounded-lg shadow">
+          <h2 className="text-xl font-bold mb-4">Recent Transactions</h2>
+          <table className="w-full text-left">
+            <thead>
+              <tr className="text-gray-500">
+                <th className="py-2">Date</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {transactions.map((tx, index) => (
+                <tr key={index}>
+                  <td className="py-2">{tx.date}</td>
+                  <td>{tx.type}</td>
+                  <td>₦{tx.amount.toLocaleString()}</td>
+                  <td>{tx.status || 'Completed'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+      </main>
+    </div>
+  );
+};
+
+export default Dashboard;
